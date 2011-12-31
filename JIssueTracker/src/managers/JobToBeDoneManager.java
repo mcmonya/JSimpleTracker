@@ -8,6 +8,6 @@ package managers;
  *
  * @author Mychal
  */
-public class ProgrammerManager {
+public class JobToBeDoneManager {
     
 }
