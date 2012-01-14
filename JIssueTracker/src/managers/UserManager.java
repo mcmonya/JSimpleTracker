@@ -49,7 +49,15 @@ public class UserManager {
         this.connectionProvider = connectionProvider;
     }
 
-    public User createUser(String userLogin, String userPassword) throws UserCreationException {
+    /**
+     * Creates user and stores it in the database. Always correct User object is returned.
+     * In case of failure UserCreationException is thrown.
+     * @param userLogin
+     * @param userPassword
+     * @return created user
+     * @throws UserCreationException, SQLException
+     */
+    public User createUser(String userLogin, String userPassword) throws UserCreationException, SQLException {
         userLogin = userLogin.trim();
         try {
             checkLoginAndPasswordNotEmpty(userLogin, userPassword);
@@ -71,13 +79,16 @@ public class UserManager {
             } else {
                 throw new UserCreationException("User with login: " + userLogin + " already exists");
             }
-        } catch (SQLException e) {
-            throw new UserCreationException(e.getMessage());
         } finally {
             this.closeConnection();
         }
     }
 
+   /**
+     * Retrieves all users.
+     * @return list of all users
+     * @throws SQLException 
+     */
     public List<User> getAllUsers() throws SQLException {
         try {
             createConnection();
@@ -97,6 +108,13 @@ public class UserManager {
         }
     }
 
+    /**
+     * Returns user with specified id. If no such user exists UserNotFoundException is thrown.
+     * @param id
+     * @return
+     * @throws UserNotFoundException
+     * @throws SQLException 
+     */
     public User getUserById(int id) throws UserNotFoundException, SQLException {
         try {
             createConnection();
@@ -114,6 +132,11 @@ public class UserManager {
         }
     }
 
+    /**
+     * Removes specified user from database.
+     * @param user
+     * @throws SQLException 
+     */
     public void removeUser(User user) throws SQLException {
         try {
             createConnection();
