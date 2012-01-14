@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @author Mychal
  */
 public class User implements Serializable{
-    private String nick="";
+    private String login="";
     private String password="";
     private int id=-1;
 
@@ -23,7 +23,7 @@ public class User implements Serializable{
     public User(String nick, String password)
     {
         this.password = password;
-        this.nick = nick;
+        this.login = nick;
     }
 
     public String getPassword() {
@@ -35,12 +35,12 @@ public class User implements Serializable{
     }
 
     
-    public String getNick() {
-        return nick;
+    public String getLogin() {
+        return login;
     }
 
-    public void setNick(String nick) {
-        this.nick = nick;
+    public void setLogin(String nick) {
+        this.login = nick;
     }
 
     public int getId() {
@@ -51,4 +51,33 @@ public class User implements Serializable{
         this.id = id;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final User other = (User) obj;
+        if ((this.login == null) ? (other.login != null) : !this.login.equals(other.login)) {
+            return false;
+        }
+        if ((this.password == null) ? (other.password != null) : !this.password.equals(other.password)) {
+            return false;
+        }
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + (this.login != null ? this.login.hashCode() : 0);
+        hash = 67 * hash + (this.password != null ? this.password.hashCode() : 0);
+        hash = 67 * hash + this.id;
+        return hash;
+    }
 }
