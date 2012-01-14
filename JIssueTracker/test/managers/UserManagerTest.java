@@ -4,9 +4,11 @@
  */
 package managers;
 
+import exceptions.UserNotFoundException;
 import config.TestConnectionProvider;
 import entities.User;
 import exceptions.UserCreationException;
+import java.sql.SQLException;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -36,7 +38,9 @@ public class UserManagerTest {
     }
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException{
+        UserManager.dropTableIfExists(new TestConnectionProvider());
+        UserManager.createTable(new TestConnectionProvider());
     }
     
     @After
@@ -57,7 +61,7 @@ public class UserManagerTest {
     }
     
     @Test
-    public void testGetAllUsers() throws UserCreationException{
+    public void testGetAllUsers() throws SQLException, UserCreationException{
         userManager.createUser("user1", "pass1");
         userManager.createUser("user2", "pass2");
         List<User> res = userManager.getAllUsers();
@@ -65,17 +69,24 @@ public class UserManagerTest {
     }
 
     @Test
-    public void testGetUserById() throws UserCreationException{
+    public void testGetUserById() throws UserCreationException, SQLException, 
+            UserCreationException, UserNotFoundException{
         User user = userManager.createUser("user1", "pass1");
         User retrieved = userManager.getUserById(user.getId());
         assertEquals(user, retrieved);
     }
 
     @Test
-    public void testRemoveUser() throws UserCreationException{
+    public void testRemoveUser() throws SQLException, UserCreationException{
         User user = userManager.createUser("user", "pass");
         userManager.removeUser(user);
         List<User> allUsers = userManager.getAllUsers();
         assertTrue(allUsers.isEmpty());
+    }
+    
+    @Test(expected=UserCreationException.class)
+    public void testWrongLoginAndPassword() throws UserCreationException
+    {
+        userManager.createUser(" ", "");
     }
 }
