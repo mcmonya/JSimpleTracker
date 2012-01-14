@@ -69,13 +69,18 @@ public class UserManager {
                 createStatement.addBatch();
                 createStatement.executeBatch();
                 ResultSet generatedKeys = createStatement.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    User result = new User(userLogin, userPassword);
-                    result.setId(generatedKeys.getInt(1));
-                    return result;
-                } else {
-                    throw new UserCreationException("Could not create user.");
+                try {
+                    if (generatedKeys.next()) {
+                        User result = new User(userLogin, userPassword);
+                        result.setId(generatedKeys.getInt(1));
+                        return result;
+                    } else {
+                        throw new UserCreationException("Could not create user.");
+                    }
+                } finally {
+                    generatedKeys.close();
                 }
+
             } else {
                 throw new UserCreationException("User with login: " + userLogin + " already exists");
             }
@@ -84,7 +89,7 @@ public class UserManager {
         }
     }
 
-   /**
+    /**
      * Retrieves all users.
      * @return list of all users
      * @throws SQLException 
@@ -102,6 +107,7 @@ public class UserManager {
                 user.setPassword(resultSet.getString(3));
                 result.add(user);
             }
+            resultSet.close();
             return result;
         } finally {
             closeConnection();
@@ -121,11 +127,15 @@ public class UserManager {
             PreparedStatement selectStatement = connection.prepareStatement(GET_USER_BY_ID_QUERY);
             selectStatement.setInt(1, id);
             ResultSet resultSet = selectStatement.executeQuery();
-            if (resultSet.next()) {
-                User user = createUserFromResultSet(resultSet);
-                return user;
-            } else {
-                throw new UserNotFoundException();
+            try {
+                if (resultSet.next()) {
+                    User user = createUserFromResultSet(resultSet);
+                    return user;
+                } else {
+                    throw new UserNotFoundException();
+                }
+            } finally {
+                resultSet.close();
             }
         } finally {
             this.closeConnection();
@@ -154,8 +164,12 @@ public class UserManager {
         selectStatement.setString(1, login);
         ResultSet resultSet = selectStatement.executeQuery();
         User result = null;
-        if (resultSet.next()) {
-            result = createUserFromResultSet(resultSet);
+        try {
+            if (resultSet.next()) {
+                result = createUserFromResultSet(resultSet);
+            }
+        } finally {
+            resultSet.close();
         }
         return result;
     }
