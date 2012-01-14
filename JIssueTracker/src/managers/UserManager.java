@@ -31,10 +31,10 @@ public class UserManager {
         statement.executeUpdate("DROP TABLE IF EXISTS USERS;");
     }
     
-    public static void createTable(IssueTrackerConnectionProvider provider) throws SQLException
+    public static void createTableIfNotExists(IssueTrackerConnectionProvider provider) throws SQLException
     {
         Statement statement = provider.createConnection().createStatement();
-        statement.executeUpdate("CREATE TABLE USERS(ID INTEGER PRIMARY KEY AUTOINCREMENT"
+        statement.executeUpdate("CREATE TABLE IF NOT EXISTS USERS(ID INTEGER PRIMARY KEY AUTOINCREMENT"
                 + ", LOGIN VARCHAR(50)"
                 + ", PASSWORD VARCHAR(50));");  
     }
@@ -93,7 +93,7 @@ public class UserManager {
             {
                 User user = new User();
                 user.setId(resultSet.getInt(1));
-                user.setNick(resultSet.getString(2));
+                user.setLogin(resultSet.getString(2));
                 user.setPassword(resultSet.getString(3));
                 result.add(user);
             }
@@ -194,7 +194,7 @@ public class UserManager {
     {
         User result = new User();
         result.setId(resultSet.getInt(1));
-        result.setNick(resultSet.getString(2));
+        result.setLogin(resultSet.getString(2));
         result.setPassword(resultSet.getString(3));      
         return result;
     }

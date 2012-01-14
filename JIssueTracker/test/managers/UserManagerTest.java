@@ -40,7 +40,7 @@ public class UserManagerTest {
     @Before
     public void setUp() throws SQLException{
         UserManager.dropTableIfExists(new TestConnectionProvider());
-        UserManager.createTable(new TestConnectionProvider());
+        UserManager.createTableIfNotExists(new TestConnectionProvider());
     }
     
     @After
@@ -88,5 +88,12 @@ public class UserManagerTest {
     public void testWrongLoginAndPassword() throws UserCreationException
     {
         userManager.createUser(" ", "");
+    }
+    
+    @Test
+    public void testTrimmingLogin() throws UserCreationException
+    {
+        User user = userManager.createUser("   login  ", "pass");
+        assertEquals("login", user.getLogin());
     }
 }
