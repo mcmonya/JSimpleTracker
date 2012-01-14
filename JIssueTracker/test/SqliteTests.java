@@ -3,6 +3,8 @@
  * and open the template in the editor.
  */
 
+import config.IssueTrackerConnectionProvider;
+import config.TestConnectionProvider;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -18,14 +20,14 @@ import java.sql.*;
 public class SqliteTests {
     
     private static Connection connection;
-    
+    private static IssueTrackerConnectionProvider connectionProvider = new TestConnectionProvider();
     public SqliteTests() {
     }
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         Class.forName("org.sqlite.JDBC");
-        connection = DriverManager.getConnection("jdbc:sqlite:baza.db");
+        connection = connectionProvider.createConnection();
     }
 
     @AfterClass

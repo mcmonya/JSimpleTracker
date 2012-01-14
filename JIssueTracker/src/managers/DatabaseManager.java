@@ -19,8 +19,4 @@ public class DatabaseManager {
         Connection result = DriverManager.getConnection(connectionString);
         return result;
     }
-    public static void createTableStructure() throws SQLException
-    {
-        Connection conn = getConnection();
-    }
 }
