@@ -21,7 +21,7 @@ import java.util.List;
  * 
  * @author Mychal
  */
-public class UserManager {
+public class UserManager extends IssueTrackerManager {
 
     private static final String DROP_TABLE_QUERY = "DROP TABLE IF EXISTS USERS;";
     private static final String CREATE_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS USERS(ID INTEGER PRIMARY KEY AUTOINCREMENT"
@@ -32,8 +32,6 @@ public class UserManager {
     private static final String GET_USER_BY_ID_QUERY = "SELECT * FROM USERS WHERE ID=?;";
     private static final String DELETE_USER_QUERY = "DELETE FROM USERS WHERE ID=?;";
     private static final String SELECT_BY_LOGIN_QUERY = "SELECT * FROM USERS WHERE LOGIN=?;";
-    private IssueTrackerConnectionProvider connectionProvider;
-    private Connection connection = null;
 
     public static void dropTableIfExists(IssueTrackerConnectionProvider provider) throws SQLException {
         Statement statement = provider.createConnection().createStatement();
@@ -46,7 +44,7 @@ public class UserManager {
     }
 
     public UserManager(IssueTrackerConnectionProvider connectionProvider) {
-        this.connectionProvider = connectionProvider;
+        super(connectionProvider);
     }
 
     /**
@@ -182,23 +180,6 @@ public class UserManager {
 
     private boolean userWithGivenLoginExists(String login) throws SQLException {
         return (this.getUserByLogin(login) != null);
-    }
-
-    private void createConnection() throws SQLException {
-        if (this.connection == null) {
-            this.connection = connectionProvider.createConnection();
-        }
-    }
-
-    private void closeConnection() {
-        try {
-            if (this.connection != null) {
-                this.connection.close();
-            }
-        } catch (SQLException e) {
-        } finally {
-            this.connection = null;
-        }
     }
 
     private User createUserFromResultSet(ResultSet resultSet) throws SQLException {

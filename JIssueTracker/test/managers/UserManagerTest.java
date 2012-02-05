@@ -48,13 +48,13 @@ public class UserManagerTest {
     }
 
     @Test
-    public void testCreateUser() throws UserCreationException{
+    public void testCreateUser() throws UserCreationException, SQLException{
         User user = userManager.createUser("login", "hasło");
         assertTrue(user.getId() != -1);
     }
 
     @Test(expected=UserCreationException.class)
-    public void testDontAllowDuplicateLogin() throws UserCreationException
+    public void testDontAllowDuplicateLogin() throws UserCreationException, SQLException
     {
         userManager.createUser("login", "hasło");
         userManager.createUser("login", "blabla");
@@ -85,13 +85,13 @@ public class UserManagerTest {
     }
     
     @Test(expected=UserCreationException.class)
-    public void testWrongLoginAndPassword() throws UserCreationException
+    public void testWrongLoginAndPassword() throws UserCreationException, SQLException
     {
         userManager.createUser(" ", "");
     }
     
     @Test
-    public void testTrimmingLogin() throws UserCreationException
+    public void testTrimmingLogin() throws UserCreationException, SQLException
     {
         User user = userManager.createUser("   login  ", "pass");
         assertEquals("login", user.getLogin());
