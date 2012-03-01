@@ -13,9 +13,9 @@ import java.util.Date;
  * @author Mychal
  */
 public class JobToBeDone implements Serializable{
-    private int id;
-    private int requestorId;
-    private int programmerId;
+    private int id = -1;
+    private User requestor;
+    private User programmer;
     private String todo;
     private Date dateAdded;
     private int priority = 1;
@@ -49,20 +49,20 @@ public class JobToBeDone implements Serializable{
         this.priority = priority;
     }
 
-    public int getProgrammerId() {
-        return programmerId;
+    public User getProgrammer() {
+        return programmer;
     }
 
-    public void setProgrammerId(int programmerId) {
-        this.programmerId = programmerId;
+    public void setProgrammer(User programmer) {
+        this.programmer = programmer;
     }
 
-    public int getRequestorId() {
-        return requestorId;
+    public User getRequestor() {
+        return requestor;
     }
 
-    public void setRequestorId(int requestorId) {
-        this.requestorId = requestorId;
+    public void setRequestor(User requestor) {
+        this.requestor = requestor;
     }
 
     public String getTodo() {
