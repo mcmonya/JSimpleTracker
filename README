@@ -1,2 +1,5 @@
-GOOD JOB!
-You have just read the README!
+Tha main aim of this project is to provide standalone application for managing todo jobs.
+It is designed to be efficient way of exchanging todos among whole team without any dedicated software.
+
+The application consists of standalone server which uses SQLite database and clients connecting to this server using designed protocol and sockets. server can be deployed anywhere if JRE is installed.  
+
