@@ -14,7 +14,7 @@ import java.sql.SQLException;
  */
 public class IssueTrackerManager {
 
-    private IssueTrackerConnectionProvider connectionProvider;
+    protected IssueTrackerConnectionProvider connectionProvider;
     
     public IssueTrackerManager(IssueTrackerConnectionProvider connectionProvider) {
         this.connectionProvider = connectionProvider;

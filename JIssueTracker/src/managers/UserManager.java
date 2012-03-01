@@ -8,7 +8,6 @@ import config.IssueTrackerConnectionProvider;
 import entities.User;
 import exceptions.UserCreationException;
 import exceptions.UserNotFoundException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -55,7 +54,7 @@ public class UserManager extends IssueTrackerManager {
      * @return created user
      * @throws UserCreationException, SQLException
      */
-    public User createUser(String userLogin, String userPassword) throws UserCreationException, SQLException {
+    public synchronized User createUser(String userLogin, String userPassword) throws UserCreationException, SQLException {
         userLogin = userLogin.trim();
         try {
             checkLoginAndPasswordNotEmpty(userLogin, userPassword);
@@ -92,17 +91,14 @@ public class UserManager extends IssueTrackerManager {
      * @return list of all users
      * @throws SQLException 
      */
-    public List<User> getAllUsers() throws SQLException {
+    public synchronized List<User> getAllUsers() throws SQLException {
         try {
             createConnection();
             Statement selectStatement = connection.createStatement();
             ResultSet resultSet = selectStatement.executeQuery(SELECT_ALL_QUERY);
             List<User> result = new ArrayList<User>();
             while (resultSet.next()) {
-                User user = new User();
-                user.setId(resultSet.getInt(1));
-                user.setLogin(resultSet.getString(2));
-                user.setPassword(resultSet.getString(3));
+                User user = createUserFromResultSet(resultSet);
                 result.add(user);
             }
             resultSet.close();
@@ -119,7 +115,7 @@ public class UserManager extends IssueTrackerManager {
      * @throws UserNotFoundException
      * @throws SQLException 
      */
-    public User getUserById(int id) throws UserNotFoundException, SQLException {
+    public synchronized User getUserById(int id) throws UserNotFoundException, SQLException {
         try {
             createConnection();
             PreparedStatement selectStatement = connection.prepareStatement(GET_USER_BY_ID_QUERY);
@@ -145,7 +141,7 @@ public class UserManager extends IssueTrackerManager {
      * @param user
      * @throws SQLException 
      */
-    public void removeUser(User user) throws SQLException {
+    public synchronized void removeUser(User user) throws SQLException {
         try {
             createConnection();
             PreparedStatement deleteStatement = connection.prepareStatement(DELETE_USER_QUERY);
