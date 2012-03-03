@@ -73,8 +73,8 @@ public class JobToBeDoneManagerTest {
         JobToBeDone job2 = jobsManager.createNewJob(requestor, programmer, "DO ZROBIENIA 2", 1);
         List<JobToBeDone> allJobs = jobsManager.getAllJobs();
         assertEquals(job1.getTodo(), allJobs.get(0).getTodo());
-        assertEquals(allJobs.get(1).getRequestor().getId(), job1.getRequestor().getId());
-        assertEquals(allJobs.size(), 2);
+        assertEquals(job1.getRequestor().getId(), allJobs.get(1).getRequestor().getId());
+        assertEquals(2, allJobs.size());
     }
 
     /**
@@ -89,50 +89,76 @@ public class JobToBeDoneManagerTest {
         JobToBeDone job1 = jobsManager.createNewJob(requestor, programmer1, "TODO", 1);
         JobToBeDone job2 = jobsManager.createNewJob(requestor, programmer2, "TODO", 1);
         List<JobToBeDone> result = jobsManager.getAllJobsAssignedToProgrammer(programmer1);
-        assertEquals(result.size(), 1);
-        assertEquals(result.get(0).getProgrammer().getId(), programmer1.getId());
+        assertEquals(1, result.size());
+        assertEquals(programmer1.getId(), result.get(0).getProgrammer().getId());
     }
 
-    /**
-     * Test of getAllJobsByRequestor method, of class JobToBeDoneManager.
-     */
+
     @Test
-    public void testGetAllJobsByRequestor() {
-        System.out.println("getAllJobsByRequestor");
-        User requestor = null;
-        JobToBeDoneManager instance = null;
-        List expResult = null;
-        List result = instance.getAllJobsByRequestor(requestor);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetAllJobsAfterId() throws Exception
+    {
+        System.out.println("getAllJobsAfterId");
+        User programmer = userManager.createUser("programmer", "pass");
+        User requestor = userManager.createUser("requestor", "pass");
+        JobToBeDone[] jobs = new JobToBeDone[5];
+        for(int i = 0; i < jobs.length; ++i)
+        {
+            jobs[i] = jobsManager.createNewJob(requestor, programmer, "TODO", 1);
+        }
+        List<JobToBeDone> res = jobsManager.getAllJobsAfterId(jobs[2].getId());
+        assertEquals(2, res.size());
     }
-
+    
+    @Test
+    public void testDeleteJob() throws Exception
+    {
+        User user = userManager.createUser("programmer", "pass");
+        JobToBeDone[] jobs = new JobToBeDone[5];
+        for(int i = 0; i < jobs.length; ++i)
+        {
+            jobs[i] = jobsManager.createNewJob(user, user, "TODO", 1);
+        }
+        
+        jobsManager.deleteJob(jobs[0]);
+        jobsManager.deleteJob(jobs[1]);
+        
+        List<JobToBeDone> res = jobsManager.getAllJobs();
+        assertEquals(3, res.size());
+    }
+    
+    
     /**
      * Test of getAllUndoneJobs method, of class JobToBeDoneManager.
      */
     @Test
-    public void testGetAllUndoneJobs() {
+    public void testGetAllUndoneJobs() throws Exception{
         System.out.println("getAllUndoneJobs");
-        JobToBeDoneManager instance = null;
-        List expResult = null;
-        List result = instance.getAllUndoneJobs();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        User user = userManager.createUser("User", "asd");
+        JobToBeDone[] jobs = new JobToBeDone[5];
+        for(int i = 0; i < jobs.length; ++i)
+        {
+            jobs[i] = jobsManager.createNewJob(user, user, "TODO", 1);
+        }
+        List<JobToBeDone> res = jobsManager.getAllUndoneJobs(); 
+        assertEquals(5, res.size());
     }
 
     /**
      * Test of getAllDoneJobs method, of class JobToBeDoneManager.
      */
     @Test
-    public void testGetAllDoneJobs() {
+    public void testGetAllDoneJobs() throws Exception {
         System.out.println("getAllDoneJobs");
-        JobToBeDoneManager instance = null;
-        List expResult = null;
-        List result = instance.getAllDoneJobs();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        User user = userManager.createUser("User", "asd");
+        JobToBeDone[] jobs = new JobToBeDone[5];
+        for(int i = 0; i < jobs.length; ++i)
+        {
+            jobs[i] = jobsManager.createNewJob(user, user, "TODO", 1);
+        }
+        jobs[1].setDone(true);
+        jobsManager.updateJob(jobs[1]);
+        List<JobToBeDone> res = jobsManager.getAllDoneJobs();
+        assertEquals(1, res.size());
+        assertEquals(jobs[1].getId(), res.get(0).getId());
     }
 }

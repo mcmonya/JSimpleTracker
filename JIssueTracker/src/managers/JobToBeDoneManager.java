@@ -4,6 +4,7 @@
  */
 package managers;
 
+import com.sun.jmx.mbeanserver.OpenConverter;
 import config.IssueTrackerConnectionProvider;
 import entities.JobToBeDone;
 import entities.User;
@@ -15,7 +16,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * CRUD of Jobs to be done
@@ -37,9 +37,18 @@ public class JobToBeDoneManager extends IssueTrackerManager
             + ", TODO, DATE_ADDED, PRIORITY, DONE) VALUES(?, ?, ?, ?, ?, ?);";
     private static final String DELETE_QUERY = "DELETE FROM JOBS_TO_BE_DONE WHERE ID=?;";
     private static final String SELECT_ALL_QUERY = "SELECT * FROM JOBS_TO_BE_DONE;";
-    private static final String SELECT_JOB_BY_ID_QUERY = "SELECT * FROM JOBS_TO_BE_DONE WHERE ID=?;";
+    private static final String SELECT_JOBS_BY_DONE = "SELECT * FROM JOBS_TO_BE_DONE WHERE DONE=?;";
     private static final String SELECT_JOBS_ASSIGNED_TO_PROGRAMMER_QUERY = "SELECT * FROM JOBS_TO_BE_DONE WHERE PROGRAMMER_ID=?";
-
+    private static final String SELECT_JOBS_AFTER_ID_QUERY = "SELECT * FROM JOBS_TO_BE_DONE WHERE ID>?;";
+    private static final String UPDATE_JOB_QUERY = "UPDATE JOBS_TO_BE_DONE SET "
+            + " REQUESTOR_ID=?"
+            + ", PROGRAMMER_ID=?"
+            + ", TODO=?"
+            + ", PRIORITY=?"
+            + ", DONE=? "
+            + "WHERE ID=?;";
+    
+    
     public static void dropTableIfExists(IssueTrackerConnectionProvider provider) throws SQLException
     {
         Statement statement = provider.createConnection().createStatement();
@@ -140,19 +149,108 @@ public class JobToBeDoneManager extends IssueTrackerManager
         }
     }
 
-    public List<JobToBeDone> getAllJobsByRequestor(User requestor)
+    public List<JobToBeDone> getAllJobsAfterId(int id) throws SQLException
     {
-        throw new UnsupportedOperationException();
+        List<JobToBeDone> result = new ArrayList<JobToBeDone>();
+        createConnection();
+        try
+        {
+            PreparedStatement selectStatement = connection.prepareStatement(SELECT_JOBS_AFTER_ID_QUERY);
+            selectStatement.setInt(1, id);
+            ResultSet resultSet = selectStatement.executeQuery();
+            while (resultSet.next())
+            {
+                try
+                {
+                    JobToBeDone job = createJobFromResultSet(resultSet);
+                    result.add(job);
+                } catch (UserNotFoundException e)
+                {
+                }
+            }
+        } finally
+        {
+            closeConnection();
+        }
+        return result;
+    }
+    
+
+    public List<JobToBeDone> getAllUndoneJobs() throws SQLException
+    {
+        createConnection();
+        try
+        {
+            return getAllJobsByDone(false);
+        } finally
+        {
+            closeConnection();
+        }
     }
 
-    public List<JobToBeDone> getAllUndoneJobs()
+    public List<JobToBeDone> getAllDoneJobs() throws SQLException
     {
-        throw new UnsupportedOperationException();
+        createConnection();
+        try
+        {
+            return getAllJobsByDone(true);
+        } finally
+        {
+            closeConnection();
+        }
     }
-
-    public List<JobToBeDone> getAllDoneJobs()
+    
+    public void updateJob(JobToBeDone job) throws SQLException
     {
-        throw new UnsupportedOperationException();
+        createConnection();
+        try
+        {
+            PreparedStatement updateStatement = connection.prepareStatement(UPDATE_JOB_QUERY);
+            updateStatement.setInt(1, job.getRequestor().getId());
+            updateStatement.setInt(2, job.getProgrammer().getId());
+            updateStatement.setString(3, job.getTodo());
+            updateStatement.setInt(4, job.getPriority());
+            updateStatement.setBoolean(5, job.isDone());
+            updateStatement.setInt(6, job.getId());
+            updateStatement.executeUpdate();
+        }finally
+        {
+            closeConnection();
+        }
+    }
+    
+    public void deleteJob(JobToBeDone job) throws SQLException
+    {
+        createConnection();
+        try
+        {
+            PreparedStatement deleteStatement = connection.prepareStatement(DELETE_QUERY);
+            deleteStatement.setInt(1, job.getId());
+            deleteStatement.executeUpdate();
+        } finally
+        {
+            closeConnection();
+        }
+    }
+    
+    private List<JobToBeDone> getAllJobsByDone(boolean done) throws SQLException
+    {
+        List<JobToBeDone> result = new ArrayList<JobToBeDone>();
+        PreparedStatement statement = connection.prepareStatement(SELECT_JOBS_BY_DONE);
+        statement.setBoolean(1, done);
+        ResultSet resultSet = statement.executeQuery();
+        while(resultSet.next())
+        {
+            try
+            {
+                JobToBeDone job = createJobFromResultSet(resultSet);
+                result.add(job);
+            } catch(UserNotFoundException e)
+            {
+                
+            }
+        }
+        return result;
     }
 
     private JobToBeDone createJobFromResultSet(ResultSet resultSet) throws SQLException, UserNotFoundException
