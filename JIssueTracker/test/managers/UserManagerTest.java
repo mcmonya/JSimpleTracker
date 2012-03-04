@@ -96,4 +96,28 @@ public class UserManagerTest {
         User user = userManager.createUser("   login  ", "pass");
         assertEquals("login", user.getLogin());
     }
+    
+    @Test
+    public void testAuthenticateSuccess() throws Exception
+    {
+        System.out.println("authenticateSuccess");
+        userManager.createUser("login", "password");
+        assertEquals(true, userManager.authenticate("login", "password"));
+    }
+    
+    @Test
+    public void testAuthenticateFailBadLogin() throws Exception
+    {
+        System.out.println("authenticateFailBadLogin");
+        userManager.createUser("login", "password");
+        assertEquals(false, userManager.authenticate("logina", "password"));       
+    }
+    
+    @Test
+    public void testAuthenticateFailBadPassword() throws Exception
+    {
+        System.out.println("authenticateFailBadPassword");
+        userManager.createUser("login", "password");
+        assertEquals(false, userManager.authenticate("login", "password1"));       
+    }
 }
