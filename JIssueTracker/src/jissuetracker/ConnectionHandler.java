@@ -4,8 +4,10 @@
  */
 package jissuetracker;
 
+import communication.AuthenticationFailedResponse;
 import communication.Request;
 import communication.Response;
+import exceptions.ModelException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -65,7 +67,10 @@ public class ConnectionHandler implements Runnable
     {
         if(request == null)
             return;
-        response = request.produceResponse(Issues.getInstance());
+        if(!authenticate())
+            response = new AuthenticationFailedResponse();
+        else
+            response = request.produceResponse(Issues.getInstance());
     }
     
     private void sendResponse()
@@ -77,6 +82,17 @@ public class ConnectionHandler implements Runnable
             outputStream.writeObject(response);
         } catch(IOException e)
         {
+        }
+    }
+    
+    private boolean authenticate()
+    {
+        try
+        {
+            return Issues.getInstance().authenticate(request.getUserName(), request.getPassword());
+        } catch(ModelException e)
+        {
+            return false;
         }
     }
 }

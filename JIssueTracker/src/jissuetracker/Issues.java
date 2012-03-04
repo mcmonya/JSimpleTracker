@@ -146,6 +146,18 @@ public class Issues implements IssuesModel
         }
     }
     
+    @Override
+    public boolean authenticate(String userName, String password) throws ModelException
+    {
+        try
+        {
+            return userManager.authenticate(userName, password);
+        } catch(SQLException e)
+        {
+            throw new ModelException(e.toString());
+        }
+    }
+    
     private void stateChanged()
     {
         lastOperationDate = null;

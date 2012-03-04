@@ -80,4 +80,6 @@ public interface IssuesModel extends Serializable
      * @throws ModelException in case of fail
      */
     public List<User> getAllUsers() throws ModelException;
+    
+    public boolean authenticate(String userName, String password) throws ModelException;
 }

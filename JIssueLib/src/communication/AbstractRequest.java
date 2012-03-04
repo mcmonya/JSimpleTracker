@@ -4,6 +4,8 @@
  */
 package communication;
 
+import exceptions.ModelException;
+
 /**
  *
  * @author mychal
@@ -12,6 +14,8 @@ public abstract class AbstractRequest implements Request
 {
     private String userName;
     private String password;
+    protected AbstractResponse response;
+    protected IssuesModel model;
     
     public AbstractRequest(String userName, String password)
     {
@@ -32,5 +36,20 @@ public abstract class AbstractRequest implements Request
     }
     
     @Override
-    public abstract Response produceResponse(IssuesModel model);
+    public Response produceResponse(IssuesModel model)
+    {
+        this.model = model;
+        this.response = createResponse();
+        try
+        {
+            onProduceResponse();
+        } catch(ModelException e)
+        {
+            this.response.reportError(e.toString());
+        }
+        return response;
+    }
+    
+    protected abstract AbstractResponse createResponse();
+    protected abstract void onProduceResponse() throws ModelException;
 }

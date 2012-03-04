@@ -152,6 +152,21 @@ public class UserManager extends IssueTrackerManager {
             closeConnection();
         }
     }
+    
+    public boolean authenticate(String userName, String password) throws SQLException
+    {
+        createConnection();
+        try
+        {
+            User user = getUserByLogin(userName);
+            if(user == null)
+                return false;
+            return user.getPassword().equals(password);
+        } finally
+        {
+            closeConnection();
+        }
+    }
 
     private User getUserByLogin(String login) throws SQLException {
         PreparedStatement selectStatement = connection.prepareStatement(SELECT_BY_LOGIN_QUERY);
