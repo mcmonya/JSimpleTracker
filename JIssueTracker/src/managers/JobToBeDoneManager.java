@@ -4,7 +4,6 @@
  */
 package managers;
 
-import com.sun.jmx.mbeanserver.OpenConverter;
 import config.IssueTrackerConnectionProvider;
 import entities.JobToBeDone;
 import entities.User;
@@ -219,6 +218,11 @@ public class JobToBeDoneManager extends IssueTrackerManager
         }
     }
     
+    /**
+     * Removes specified job from database
+     * @param job the job to be removed
+     * @throws SQLException 
+     */
     public void deleteJob(JobToBeDone job) throws SQLException
     {
         createConnection();
