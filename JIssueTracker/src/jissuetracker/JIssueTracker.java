@@ -5,6 +5,7 @@
 package jissuetracker;
 
 import java.io.IOException;
+import javax.swing.JOptionPane;
 
 
 /**
@@ -24,7 +25,7 @@ public class JIssueTracker {
             dispatcher.serve();
         } catch(IOException e)
         {
-            
+            JOptionPane.showMessageDialog(null, e);
         }
     }
 }

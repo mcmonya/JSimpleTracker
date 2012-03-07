@@ -12,7 +12,7 @@ import java.io.*;
  */
 public class Configuration implements Serializable
 {
-    private int port = 666;
+    private int port = 6666;
     private int connectionPoolSize = 5;    
     private static final Configuration instance = new Configuration();
     private static final String CONFIG_FILE_NAME = "config.dat";

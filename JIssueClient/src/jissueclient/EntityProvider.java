@@ -5,6 +5,7 @@
 package jissueclient;
 
 import entities.JobToBeDone;
+import exceptions.ResponseException;
 import java.util.List;
 
 /**
@@ -13,5 +14,7 @@ import java.util.List;
  */
 public interface EntityProvider
 {
-    public List<JobToBeDone> getAllJobs();
+    public List<JobToBeDone> getAllJobs() throws ResponseException; 
+    public void removeJob(JobToBeDone job) throws ResponseException;
+    public void updateJob(JobToBeDone job) throws ResponseException;
 }
